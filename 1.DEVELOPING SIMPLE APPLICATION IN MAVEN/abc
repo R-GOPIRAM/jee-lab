@@ -102,3 +102,25 @@ mvn clean compile
 java -cp com.companyname.bank.App Hello World!
 Result:
 Thus, the Maven simple application was compiled, built, and executed successfully.
+
+
+consumerBanking/
+|-- pom.xml
+|-- src/
+    |-- main/
+    |   |-- java/
+    |   |   `-- com/
+    |   |       `-- companyname/
+    |   |           `-- bank/
+    |   |               `-- App.java
+    |   `-- resources/
+    |       `-- (resource files)
+    `-- test/
+        |-- java/
+        |   `-- com/
+        |       `-- companyname/
+        |           `-- bank/
+        |               `-- AppTest.java
+        `-- resources/
+            `-- (test resource files)
+
