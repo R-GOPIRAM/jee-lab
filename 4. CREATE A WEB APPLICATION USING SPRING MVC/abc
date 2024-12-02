@@ -1,0 +1,149 @@
+Project Directory Structure
+spring-mvc-example/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── javatpoint/
+│   │   │           ├── HelloController.java
+│   │   ├── resources/
+│   │   ├── webapp/
+│   │   │   └── WEB-INF/
+│   │   │       ├── jsp/
+│   │   │       │   └── index.jsp
+│   │   │       └── web.xml
+├── pom.xml
+└── README.md
+Files and Their Content
+1. pom.xml
+This is the Maven configuration file where you add the Spring MVC and Servlet dependencies:
+
+xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.javatpoint</groupId>
+    <artifactId>SpringMVC</artifactId>
+    <packaging>war</packaging>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>SpringMVC Maven Webapp</name>
+    <url>http://maven.apache.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>5.1.1.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>3.0-alpha-1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>SpringMVC</finalName>
+    </build>
+</project>
+2. HelloController.java
+This Java class is the controller using @Controller and @RequestMapping annotations:
+
+java
+package com.javatpoint;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+public class HelloController {
+    @RequestMapping("/")
+    public String display() {
+        return "index";
+    }
+}
+3. web.xml
+This XML file configures the DispatcherServlet and provides component scanning support:
+
+xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+    <servlet>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/spring-servlet.xml</param-value>
+    </context-param>
+
+</web-app>
+4. spring-servlet.xml
+This XML file defines the beans and component scanning:
+
+xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="com.javatpoint" />
+    <mvc:annotation-driven />
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+</beans>
+5. index.jsp
+This JSP file displays the welcome message:
+
+jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<body>
+    <p>Welcome to Spring MVC Tutorial</p>
+</body>
+</html>
+Running the Project
+Create the Maven project structure as outlined above.
+
+Add the dependencies to your pom.xml file.
+
+Create the Java classes (HelloController.java) in the appropriate package.
+
+Create the XML configuration files (web.xml and spring-servlet.xml) in the WEB-INF directory.
+
+Create the JSP file (index.jsp) in the WEB-INF/jsp directory.
+
+Build and deploy the project on a server like Apache Tomcat.
+
+To compile the project: mvn compile
+
+To package the project: mvn package
+
+Deploy the WAR file generated in the target directory to your server.
