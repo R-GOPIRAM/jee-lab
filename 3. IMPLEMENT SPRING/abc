@@ -1,0 +1,110 @@
+Project Directory Structure
+spring-example/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── javatpoint/
+│   │   │           ├── Student.java
+│   │   │           └── Test.java
+│   │   ├── resources/
+│   │   │   └── applicationContext.xml
+│   └── test/
+│       ├── java/
+│       └── resources/
+├── lib/
+│   └── spring-context-5.3.9.jar
+├── pom.xml
+└── README.md
+Files and Their Content
+1. pom.xml
+This is the Maven configuration file where you add the Spring dependency. Ensure to place the Spring JAR file in the lib directory if not using Maven.
+
+xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.javatpoint</groupId>
+    <artifactId>spring-example</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.9</version>
+        </dependency>
+    </dependencies>
+</project>
+2. Student.java
+This Java class represents the bean you will manage with Spring:
+
+java
+package com.javatpoint;
+
+public class Student {
+
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void displayInfo() {
+        System.out.println("Hello: " + name);
+    }
+}
+3. applicationContext.xml
+This XML file defines the Spring beans configuration:
+
+xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="studentbean" class="com.javatpoint.Student">
+        <property name="name" value="Vimal Jaiswal"/>
+    </bean>
+
+</beans>
+4. Test.java
+This Java class loads the Spring application context and retrieves the bean:
+
+java
+package com.javatpoint;
+
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+public class Test {
+    public static void main(String[] args) {
+        Resource resource = new ClassPathResource("applicationContext.xml");
+        BeanFactory factory = new XmlBeanFactory(resource);
+        Student student = (Student) factory.getBean("studentbean");
+        student.displayInfo();
+    }
+}
+Running the Project
+Create the Java project structure as outlined above.
+
+Add the Spring dependencies to your pom.xml file.
+
+Create the Java classes (Student.java and Test.java) in the appropriate package.
+
+Create the XML configuration file (applicationContext.xml) in the resources directory.
+
+Build and run the project using Maven commands:
+
+To compile the project: mvn compile
+
+To run the project: mvn exec:java -Dexec.mainClass="com.javatpoint.Test"
