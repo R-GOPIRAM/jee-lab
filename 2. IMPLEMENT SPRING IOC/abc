@@ -1,0 +1,130 @@
+Project Directory Structure
+spring-ioc-example/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── example/
+│   │   │           ├── ApplicationContextExam01.java
+│   │   │           └── UserBean.java
+│   │   ├── resources/
+│   │   │   └── applicationContext.xml
+│   └── test/
+│       ├── java/
+│       └── resources/
+├── pom.xml
+└── README.md
+Files and Their Content
+1. pom.xml
+This is the Maven configuration file where you add the Spring dependency:
+
+xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>spring-ioc-example</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.9</version>
+        </dependency>
+    </dependencies>
+</project>
+2. UserBean.java
+This Java class represents the bean you will manage with Spring:
+
+java
+package com.example;
+
+public class UserBean {
+
+    private String name;
+    private int age;
+    private boolean male;
+
+    public UserBean() {}
+
+    public UserBean(String name, int age, boolean male) {
+        this.name = name;
+        this.age = age;
+        this.male = male;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public boolean isMale() {
+        return male;
+    }
+
+    public void setMale(boolean male) {
+        this.male = male;
+    }
+}
+3. applicationContext.xml
+This XML file defines the Spring beans configuration:
+
+xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="userBean" class="com.example.UserBean">
+        <property name="name" value="John Doe"/>
+        <property name="age" value="30"/>
+        <property name="male" value="true"/>
+    </bean>
+
+</beans>
+4. ApplicationContextExam01.java
+This Java class loads the Spring application context and retrieves the bean:
+
+java
+package com.example;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class ApplicationContextExam01 {
+    public static void main(String[] args) {
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+
+        UserBean userBean = (UserBean) context.getBean("userBean");
+        System.out.println("User: " + userBean.getName() + ", Age: " + userBean.getAge() + ", Male: " + userBean.isMale());
+    }
+}
+Running the Project
+Create the Maven project structure as outlined above.
+
+Add the dependencies to your pom.xml file.
+
+Create the Java classes (UserBean.java and ApplicationContextExam01.java) in the appropriate package.
+
+Create the XML configuration file (applicationContext.xml) in the resources directory.
+
+Build and run the project using Maven commands:
+
+To compile the project: mvn compile
+
+To run the project: mvn exec:java -Dexec.mainClass="com.example.ApplicationContextExam01"
