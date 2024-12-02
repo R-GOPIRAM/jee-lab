@@ -1,0 +1,104 @@
+AIM:
+To develop a simple application using Maven.
+
+Procedure:
+Start the process.
+
+Create a Maven-based Java project:
+
+Use maven-archetype-quickstart plug-in.
+
+Create the project in C:\MVN directory.
+
+Open the command console:
+
+Ensure C:\MVN directory is empty.
+
+Run the following command:
+
+C:\MVN>mvn archetype:generate -DgroupId=com.companyname.bank -DartifactId=consumerBanking -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+Verify Maven project structure:
+
+Navigate to C:\MVN\consumerBanking.
+
+Ensure project contains src folder and pom.xml.
+
+Create source and test files:
+
+src/main/java/com/companyname/bank/App.java:
+
+java
+package com.companyname.bank;
+public class App {
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+}
+src/test/java/com/companyname/bank/AppTest.java:
+
+java
+package com.companyname.bank;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+public class AppTest extends TestCase {
+    public AppTest(String testName) {
+        super(testName);
+    }
+    public static Test suite() {
+        return new TestSuite(AppTest.class);
+    }
+    public void testApp() {
+        assertTrue(true);
+    }
+}
+POM.xml:
+xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.companyname.projectgroup</groupId>
+    <artifactId>project</artifactId>
+    <version>1.0</version>
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+        </dependency>
+    </dependencies>
+</project>
+Util.java:
+java
+package com.companyname.bank;
+
+public class Util {
+    public static void printMessage(String message) {
+        System.out.println(message);
+    }
+}
+Modified App.java:
+java
+package com.companyname.bank;
+
+public class App {
+    public static void main(String[] args) {
+        Util.printMessage("Hello World!");
+    }
+}
+Output:
+Compile and run:
+
+Go to C:\MVN\consumerBanking directory.
+
+Execute:
+
+shell
+mvn clean compile
+java -cp com.companyname.bank.App Hello World!
+Result:
+Thus, the Maven simple application was compiled, built, and executed successfully.
