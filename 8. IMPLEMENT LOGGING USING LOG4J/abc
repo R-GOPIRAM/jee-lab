@@ -1,0 +1,101 @@
+Certainly! Here's a structured outline and example implementation to illustrate logging using Log4j:
+
+### Project Directory Structure
+```
+log4j-example/
+├── src/
+│   ├── main/
+│   │   └── java/
+│   │       └── com/
+│   │           └── example/
+│   │               └── log4j/
+│   │                   └── log4jExample.java
+│   ├── resources/
+│   │   └── log4j.properties
+├── pom.xml
+└── README.md
+```
+
+### Files and Their Content
+
+#### 1. `pom.xml`
+This is the Maven configuration file where you add the Log4j dependency:
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example</groupId>
+    <artifactId>log4j-example</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+    </dependencies>
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
+</project>
+```
+
+#### 2. `log4j.properties`
+This is the Log4j configuration file:
+```properties
+# Define the root logger with appender file
+log = /usr/home/log4j
+log4j.rootLogger = DEBUG, FILE
+
+# Define the file appender
+log4j.appender.FILE = org.apache.log4j.FileAppender
+log4j.appender.FILE.File = ${log}/log.out
+
+# Define the layout for file appender
+log4j.appender.FILE.layout = org.apache.log4j.PatternLayout
+log4j.appender.FILE.layout.conversionPattern = %m%n
+```
+
+#### 3. `log4jExample.java`
+This Java class demonstrates the usage of Log4j:
+```java
+package com.example.log4j;
+
+import org.apache.log4j.Logger;
+import java.io.IOException;
+import java.sql.SQLException;
+
+public class log4jExample {
+
+    /* Get actual class name to be printed on */
+    static Logger log = Logger.getLogger(log4jExample.class.getName());
+
+    public static void main(String[] args) throws IOException, SQLException {
+        log.debug("Hello this is a debug message");
+        log.info("Hello this is an info message");
+    }
+}
+```
+
+### Running the Project
+1. **Create the Maven project structure** as outlined above.
+2. **Add the Log4j dependency** to your `pom.xml` file.
+3. **Create the `log4j.properties` file** in the `resources` directory.
+4. **Create the Java class** (`log4jExample.java`) in the appropriate package.
+5. **Build and run the project** using Maven commands:
+   - To compile the project: `mvn compile`
+   - To run the project: `mvn exec:java -Dexec.mainClass="com.example.log4j.log4jExample"`
+
+### Output
+When you run the Java class, you should see the following output in the `log.out` file located in the `/usr/home/log4j` directory:
+```
+Hello this is a debug message
+Hello this is an info message
+```
+
+### Result
+Thus, the implementation of the Logging concept using Log4j is successfully executed and verified.
+
+Feel free to ask if you have any questions or need further assistance!
