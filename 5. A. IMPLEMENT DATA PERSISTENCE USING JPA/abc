@@ -1,0 +1,254 @@
+Project Directory Structure
+spring-jpa-example/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── example/
+│   │   │           ├── demo/
+│   │   │           │   ├── controller/
+│   │   │           │   │   └── EmpController.java
+│   │   │           │   ├── modal/
+│   │   │           │   │   └── Employee.java
+│   │   │           │   ├── repository/
+│   │   │           │   │   └── EmployeeRepository.java
+│   │   │           │   └── service/
+│   │   │           │       ├── EmpService.java
+│   │   │           │       └── EmpServiceImpl.java
+│   │   └── resources/
+│   │       └── application.properties
+├── pom.xml
+└── README.md
+Files and Their Content
+1. pom.xml
+This is the Maven configuration file where you add the Spring Boot, JPA, and MySQL dependencies:
+
+xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.1</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.example</groupId>
+    <artifactId>ex</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>ex</name>
+    <description>Demo project for Spring Boot</description>
+    <properties>
+        <java.version>11</java.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+2. Employee.java
+This Java class represents the entity you will persist using JPA:
+
+java
+package com.example.demo.modal;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class Employee {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+    private String name;
+    private String city;
+
+    public Employee() {}
+
+    public Employee(String name, String city) {
+        this.name = name;
+        this.city = city;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+}
+3. EmployeeRepository.java
+This interface extends JpaRepository to provide CRUD operations:
+
+java
+package com.example.demo.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import com.example.demo.modal.Employee;
+
+@Repository
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {}
+4. EmpService.java
+This interface defines the service methods:
+
+java
+package com.example.demo.service;
+
+import java.util.List;
+import com.example.demo.modal.Employee;
+
+public interface EmpService {
+    List<Employee> findAllEmployees();
+    Employee findEmployeeById(long id);
+    void addEmployee(Employee employee);
+    void deleteAllEmployees();
+}
+5. EmpServiceImpl.java
+This class implements the service methods:
+
+java
+package com.example.demo.service;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.example.demo.modal.Employee;
+import com.example.demo.repository.EmployeeRepository;
+
+@Service
+public class EmpServiceImpl implements EmpService {
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Override
+    public List<Employee> findAllEmployees() {
+        return employeeRepository.findAll();
+    }
+
+    @Override
+    public Employee findEmployeeById(long id) {
+        return employeeRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public void addEmployee(Employee employee) {
+        employeeRepository.save(employee);
+    }
+
+    @Override
+    public void deleteAllEmployees() {
+        employeeRepository.deleteAll();
+    }
+}
+6. EmpController.java
+This class defines REST endpoints for the Employee entity:
+
+java
+package com.example.demo.controller;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.modal.Employee;
+import com.example.demo.service.EmpServiceImpl;
+
+@RestController
+public class EmpController {
+
+    @Autowired
+    private EmpServiceImpl empServiceImpl;
+
+    @PostMapping("/employees")
+    public void addEmployee(@RequestBody Employee employee) {
+        empServiceImpl.addEmployee(employee);
+    }
+
+    @GetMapping("/employees")
+    public List<Employee> getAllEmployees() {
+        return empServiceImpl.findAllEmployees();
+    }
+
+    @GetMapping("/employees/{id}")
+    public Employee getEmployeeById(@PathVariable long id) {
+        return empServiceImpl.findEmployeeById(id);
+    }
+
+    @DeleteMapping("/employees")
+    public void deleteAllEmployees() {
+        empServiceImpl.deleteAllEmployees();
+    }
+}
+7. application.properties
+This file configures the database connection:
+
+properties
+spring.datasource.url=jdbc:mysql://localhost:3306/your_database_name
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+Running the Project
+Create the Maven project structure as outlined above.
+
+Add the dependencies to your pom.xml file.
+
+Create the Java classes (Employee.java, EmployeeRepository.java, EmpService.java, EmpServiceImpl.java, EmpController.java) in the appropriate packages.
+
+Create the application.properties file in the resources directory and configure the database connection.
+
+Build and run the project using Maven commands:
+
+To compile the project: mvn compile
+
+To run the project: mvn spring-boot:run
