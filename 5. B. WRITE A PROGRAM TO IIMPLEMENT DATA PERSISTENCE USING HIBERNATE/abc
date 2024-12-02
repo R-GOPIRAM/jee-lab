@@ -1,0 +1,160 @@
+Project Directory Structure
+hibernate-demo/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── org/
+│   │   │       └── example/
+│   │   │           ├── App.java
+│   │   │           └── Song.java
+│   │   ├── resources/
+│   │       └── hibernate.cfg.xml
+├── pom.xml
+└── README.md
+Files and Their Content
+1. pom.xml
+This is the Maven configuration file where you add the Hibernate and MySQL dependencies:
+
+xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.example</groupId>
+    <artifactId>hibernateapp</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.0.0.Alpha8</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.0.8</version>
+        </dependency>
+    </dependencies>
+</project>
+2. Song.java
+This Java class represents the entity you will persist using Hibernate:
+
+java
+package org.example;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "song")
+public class Song {
+
+    @Id
+    @Column(name = "songId")
+    private int id;
+
+    @Column(name = "songName")
+    private String songName;
+
+    @Column(name = "singer")
+    private String artist;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getSongName() {
+        return songName;
+    }
+
+    public void setSongName(String songName) {
+        this.songName = songName;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+}
+3. hibernate.cfg.xml
+This XML file configures Hibernate and connects to the MySQL database:
+
+xml
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/hibernate_demo</property>
+        <property name="hibernate.connection.username">your_mysql_username</property>
+        <property name="hibernate.connection.password">your_mysql_password</property>
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <mapping class="org.example.Song"/>
+    </session-factory>
+</hibernate-configuration>
+4. App.java
+This Java class contains the main method to interact with the Hibernate framework:
+
+java
+package org.example;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+public class App {
+    public static void main(String[] args) {
+        // Create Configuration
+        Configuration configuration = new Configuration();
+        configuration.configure("hibernate.cfg.xml");
+        configuration.addAnnotatedClass(Song.class);
+
+        // Create SessionFactory
+        SessionFactory sessionFactory = configuration.buildSessionFactory();
+
+        // Initialize Session Object
+        Session session = sessionFactory.openSession();
+
+        // Create and persist Song object
+        Song song1 = new Song();
+        song1.setId(1);
+        song1.setSongName("Broken Angel");
+        song1.setArtist("Arash");
+
+        session.beginTransaction();
+        session.save(song1);
+        session.getTransaction().commit();
+        session.close();
+
+        System.out.println("Song details saved successfully");
+    }
+}
+Running the Project
+Create the Maven project structure as outlined above.
+
+Add the dependencies to your pom.xml file.
+
+Create the Java classes (Song.java and App.java) in the appropriate package.
+
+Create the hibernate.cfg.xml file in the resources directory and configure the database connection.
+
+Build and run the project using Maven commands:
+
+To compile the project: mvn compile
+
+To run the project: mvn exec:java -Dexec.mainClass="org.example.App"
