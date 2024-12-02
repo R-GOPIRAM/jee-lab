@@ -1,0 +1,205 @@
+Here's a more detailed guide on how to implement Spring Security using JWT and OAuth2, along with some sample code to get you started:
+
+### Project Directory Structure
+```
+spring-security-jwt-oauth2-example/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── example/
+│   │   │           ├── config/
+│   │   │           │   └── SecurityConfig.java
+│   │   │           ├── controller/
+│   │   │           │   └── UserController.java
+│   │   └── resources/
+│   │       └── application.yml
+├── baeldung-realm.json
+├── mytest.jks
+├── pom.xml
+└── README.md
+```
+
+### Files and Their Content
+
+#### 1. `pom.xml`
+This is the Maven configuration file where you add the Spring Security and JWT dependencies:
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.1</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.example</groupId>
+    <artifactId>spring-security-jwt-oauth2-example</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>spring-security-jwt-oauth2-example</name>
+    <description>Demo project for Spring Boot and JWT with OAuth2</description>
+    <properties>
+        <java.version>11</java.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security.oauth</groupId>
+            <artifactId>spring-security-oauth2</artifactId>
+            <version>2.5.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-jwt</artifactId>
+            <version>1.1.1.RELEASE</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+#### 2. `application.yml`
+This YAML configuration file sets up the resource server with JWT:
+```yaml
+server:
+  port: 8081
+  servlet:
+    context-path: /resource-server
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8083/auth/realms/baeldung
+          jwk-set-uri: http://localhost:8083/auth/realms/baeldung/protocol/openid-connect/certs
+```
+
+#### 3. `SecurityConfig.java`
+This Java class configures Spring Security to use JWT for OAuth2:
+```java
+package com.example.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@Configuration
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.cors()
+            .and()
+            .authorizeRequests()
+            .antMatchers(HttpMethod.GET, "/user/info", "/api/foos/**")
+            .hasAuthority("SCOPE_read")
+            .antMatchers(HttpMethod.POST, "/api/foos")
+            .hasAuthority("SCOPE_write")
+            .anyRequest()
+            .authenticated()
+            .and()
+            .oauth2ResourceServer()
+            .jwt();
+    }
+}
+```
+
+#### 4. `UserController.java`
+This Java class defines an endpoint to retrieve user information:
+```java
+package com.example.controller;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Collections;
+import java.util.Map;
+
+@RestController
+public class UserController {
+
+    @GetMapping("/user/info")
+    public Map<String, Object> getUserInfo(@AuthenticationPrincipal Jwt principal) {
+        Map<String, String> map = new Hashtable<>();
+        map.put("user_name", principal.getClaimAsString("preferred_username"));
+        map.put("organization", principal.getClaimAsString("organization"));
+        return Collections.unmodifiableMap(map);
+    }
+}
+```
+
+#### 5. `baeldung-realm.json`
+This JSON configuration file is used to define the realm in Keycloak:
+```json
+{
+  "realm": "baeldung",
+  "resource": "jwtClient",
+  "credentials": {
+    "secret": "secret"
+  },
+  "protocolMappers": [{
+    "name": "organization",
+    "protocol": "openid-connect",
+    "protocolMapper": "oidc-usermodel-attribute-mapper",
+    "consentRequired": false,
+    "config": {
+      "userinfo.token.claim": "true",
+      "user.attribute": "organization",
+      "id.token.claim": "true",
+      "access.token.claim": "true",
+      "claim.name": "organization",
+      "jsonType.label": "String"
+    }
+  }]
+}
+```
+
+#### 6. `mytest.jks`
+Generate the keys using the `keytool` command:
+```sh
+keytool -genkeypair -alias mytest -keyalg RSA -keypass mypass -keystore mytest.jks -storepass mypass
+```
+
+To export the public key, use the following command:
+```sh
+keytool -list -rfc --keystore mytest.jks | openssl x509 -inform pem -pubkey > publickey.pem
+```
+
+### Running the Project
+1. **Create the Maven project structure** as outlined above.
+2. **Add the dependencies** to your `pom.xml` file.
+3. **Create the configuration files** (`application.yml`, `baeldung-realm.json`, `mytest.jks`).
+4. **Create the Java classes** (`SecurityConfig.java`, `UserController.java`) in the appropriate packages.
+5. **Build and run the project** using Maven commands:
+   - To compile the project: `mvn compile`
+   - To run the project: `mvn spring-boot:run`
+
+### Output
+When you access the endpoint `/user/info` with a valid JWT token, you should see the user information, including custom claims like `organization`.
+
+### Result
+Thus, the implementation of Spring Security using JWT and OAuth2 is successfully executed and verified.
+
+Feel free to ask if you have any questions or need further assistance!
